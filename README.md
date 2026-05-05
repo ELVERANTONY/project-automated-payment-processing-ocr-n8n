@@ -39,7 +39,7 @@
    - Importar el archivo `.json` incluido en la carpeta raíz.
    - Configurar las credenciales de Telegram y Google Sheets.
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 ```
 .
 ├── cobrapp-ocr-api/     # Código de la API Python (FastAPI + OCR)
