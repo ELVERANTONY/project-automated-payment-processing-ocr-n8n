@@ -1,4 +1,4 @@
-# CobrApp: Automatización de Pagos con OCR y n8n 🚀
+# CobrApp: Automatización de Pagos con OCR y n8n 
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)
 ![n8n](https://img.shields.io/badge/n8n-Workflow-red?style=for-the-badge&logo=n8n)
@@ -7,19 +7,19 @@
 
 **CobrApp** es una solución de ingeniería diseñada para automatizar la conciliación de pagos digitales (Yape y Plin). Utiliza inteligencia artificial para procesar capturas de pantalla, extraer datos financieros y registrarlos automáticamente en Google Sheets, notificando a los usuarios vía Telegram.
 
-## 🌟 Características principales
+## Características principales
 - **OCR Multi-Motor**: Procesa imágenes con OpenCV y Tesseract utilizando 3 métodos de filtrado simultáneos para máxima precisión.
 - **Detección Inteligente**: Identifica automáticamente montos, nombres, fechas y números de operación de Yape y Plin.
 - **Orquestación n8n**: Flujo de trabajo robusto que maneja descargas, validaciones y respuestas automáticas.
 - **Despliegue con Docker**: Toda la infraestructura se levanta con un solo comando.
 
-## 🛠️ Arquitectura del Sistema
+## Arquitectura del Sistema
 1. **Telegram Bot**: Interfaz de usuario para recibir capturas.
 2. **n8n (Orquestador)**: Gestiona el flujo de datos y la lógica de negocio.
 3. **FastAPI (Cerebro OCR)**: API en Python que aplica visión artificial.
 4. **Google Sheets**: Base de datos en la nube para el registro histórico.
 
-## 🚀 Instalación y Despliegue
+## Instalación y Despliegue
 
 ### Requisitos previos
 - Docker y Docker Compose instalados.
@@ -51,7 +51,7 @@
 └── README.md
 ```
 
-## 👨‍💻 Autor
+## Autor
 **Antony Cholan** - *Desarrollador del Proyecto*
 
 ---
