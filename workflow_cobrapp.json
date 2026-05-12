@@ -1,0 +1,389 @@
+{
+  "name": "CobrApp - SISTEMA PROFESIONAL (Listo para Producción)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 3
+            }
+          ]
+        }
+      },
+      "id": "ecd96d2f-f7d5-470c-b71d-a2b693cd7811",
+      "name": "Cada 3 segundos",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot[TU_BOT_TOKEN]/getUpdates?offset=-1&limit=1",
+        "options": {}
+      },
+      "id": "30b7d4ea-fbed-4539-9801-8bb2583a3f4d",
+      "name": "Succión de Datos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -544,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !!$json.result[0].message.photo }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "494b49ff-62ae-4ac4-9ea4-37ecc61e5dd5",
+      "name": "Es Imagen?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://cobrapp-ocr-api:8000/procesar-imagen",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cf986a83-4723-446f-9bb2-84646f87f7c9",
+      "name": "Cerebro Python",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        528,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "[TU_ID_DE_GOOGLE_SHEET]",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $json.fecha }}",
+            "Hora": "={{ $json.hora }}",
+            "Nombre": "={{ $json.nombre }}",
+            "Monto": "={{ $json.monto }}",
+            "Tipo": "={{ $json.tipo }}",
+            "Estado": "={{ $json.valido ? 'Verificado' : 'Revisión Manual' }}",
+            "Operación": "={{ $json.operacion }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hora",
+              "displayName": "Hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Monto",
+              "displayName": "Monto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tipo",
+              "displayName": "Tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Operación",
+              "displayName": "Operación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0b2fec88-3b9c-473c-9bf2-ebf98e8aa30f",
+      "name": "Guardar en Excel",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Succión de Datos\"].json.result[0].message.chat.id}}",
+        "text": "=✅ **¡Pago Registrado Exitosamente!** 🚀\n\n💰 **Monto:** `S/{{$node[\"Cerebro Python\"].json[\"monto\"]}}` \n👤 **Cliente:** `{{$node[\"Cerebro Python\"].json[\"nombre\"]}}` \n📲 **Medio:** `{{$node[\"Cerebro Python\"].json[\"tipo\"]}}` \n🔢 **Operación:** `{{$node[\"Cerebro Python\"].json[\"operacion\"]}}` \n\n📊 *Datos guardados automáticamente en Google Sheets.*",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "cca0cd77-6b61-4544-ae37-f00d9e6bf862",
+      "name": "Confirmar al Cliente",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        976,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Succión de Datos\"].json.result[0].message.chat.id}}",
+        "text": "¡Hola! 👋 Soy el bot de CobrApp.\n\nPor favor, envíame la **captura de pantalla** (imagen) de tu Yape o Plin para poder registrar tu pago automáticamente. \n\n*Si envías texto, no puedo procesarlo.*",
+        "additionalFields": {}
+      },
+      "id": "34e7ac57-d6c4-4af2-ab35-b64cb20e08b7",
+      "name": "Pedir Captura",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        112,
+        656
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot[TU_BOT_TOKEN]/getFile?file_id={{ $node[\"Succión de Datos\"].json.result[0].message.photo.reverse()[0].file_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        112,
+        512
+      ],
+      "id": "9e334183-79cb-4332-94e4-59503277730d",
+      "name": "Obtener Ruta"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot[TU_BOT_TOKEN]/{{ $json.result.file_path }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        320,
+        512
+      ],
+      "id": "6d0605bd-7807-48f0-98a8-710a13be03f3",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0f818c66-3d97-4e65-8349-d137c979d1f5",
+              "leftValue": "={{ (new Date().getTime() / 1000) - $json.result[0].message.date }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -352,
+        624
+      ],
+      "id": "a944c0c6-b23e-4827-8da0-67baf97ef1e7",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cada 3 segundos": {
+      "main": [
+        [
+          {
+            "node": "Succión de Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Succión de Datos": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Imagen?": {
+      "main": [
+        [
+          {
+            "node": "Obtener Ruta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pedir Captura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cerebro Python": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Excel": {
+      "main": [
+        [
+          {
+            "node": "Confirmar al Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Ruta": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Cerebro Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Es Imagen?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
