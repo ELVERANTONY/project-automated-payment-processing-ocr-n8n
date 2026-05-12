@@ -21,6 +21,16 @@
 
 ---
 
+## 🛠️ Requisitos Previos
+
+Antes de empezar, asegúrate de tener instalado lo siguiente:
+- **Docker Desktop**: Necesario para correr n8n y la API de OCR.
+- **Git**: Para clonar el repositorio localmente.
+- **Cuenta de Google Cloud**: Para acceso a APIs de Sheets y Drive.
+- **Telegram**: Para la creación y gestión del Bot.
+
+---
+
 # 🚀 Guía de Despliegue Paso a Paso: CobrApp
 
 Esta documentación está estructurada para seguir el flujo lógico de instalación y configuración del sistema. Síguela en este orden para tener el proyecto funcionando en menos de 10 minutos.
