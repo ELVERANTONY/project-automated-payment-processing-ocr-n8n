@@ -24,7 +24,8 @@
 ## 🛠️ Requisitos Previos
 
 Antes de empezar, asegúrate de tener instalado lo siguiente:
-- **Docker Desktop**: Necesario para correr n8n y la API de OCR.
+- **Docker Desktop**: El requisito más importante, ya que contiene n8n y la API de OCR.
+- **Python 3.11**: Lenguaje utilizado para el procesamiento de imágenes (dentro del contenedor).
 - **Git**: Para clonar el repositorio localmente.
 - **Cuenta de Google Cloud**: Para acceso a APIs de Sheets y Drive.
 - **Telegram**: Para la creación y gestión del Bot.
